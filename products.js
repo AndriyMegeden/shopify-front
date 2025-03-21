@@ -99,7 +99,7 @@ function renderProducts(products) {
 
   products.forEach(({ node }) => {
     const images = node.images.edges;
-    const imageUrl = images.length > 0 ? images[0].node.url : hoverImageUrl;
+    const imageUrl = images.length > 0 ? images[0].node.url : "images/cleaner.svg";
     const hoverImageUrl = images.length > 1 ? images[1].node.url : imageUrl; // Якщо є друге зображення
 
     const oldPrice = node.variants.edges[0]?.node.compareAtPrice?.amount || "";
