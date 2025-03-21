@@ -1,20 +1,5 @@
-// class Accordion {
-//     constructor() {
-//         this.accordionWrap = document.querySelectorAll('.accordion-con');
-//         this.accordionItems = document.querySelectorAll('.accordion-item');
-//         // Перевіряємо, чи знаходить елементи
-//         this.Open();
-//     }
-
-//     Open() {
-//         this
-//     }
-// }
-// new Accordion();
-
 const accordionWrap = document.querySelectorAll(".accordion-con");
 const accordionItems = document.querySelectorAll(".accordion-item");
-console.log(this.accordions, this.accordion);
 
 accordionItems.forEach((item) => {
   item.addEventListener("click", () => {
@@ -43,3 +28,114 @@ accordionItems.forEach((item) => {
     }
   });
 });
+
+
+
+const query = `
+{
+  products(first: 10) {
+    edges {
+      node {
+        title
+        description
+        variants(first: 1) {
+          edges {
+            node {                     
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+        images(first: 2) {
+          edges {
+            node {
+              url
+              altText
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+async function fetchProducts() {
+  try {
+    const response = await fetch("https://tsodykteststore.myshopify.com/api/2023-01/graphql.json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": "7e174585a317d187255660745da44cc7"
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await response.json();
+    console.log("Отримані дані:", data); 
+
+    if (data?.data?.products?.edges?.length) {
+      renderProducts(data.data.products.edges);
+    } else {
+      console.warn("Продуктів немає або API повернув порожній список.");
+    }
+  } catch (error) {
+    console.error("Помилка отримання продуктів:", error);
+  }
+}
+
+
+fetchProducts();
+
+function renderProducts(products) {
+  const cardsContainer = document.querySelector(".cards");
+  cardsContainer.innerHTML = ""; 
+
+  products.forEach(({ node }) => {
+    const images = node.images.edges;
+    const imageUrl = images.length > 0 ? images[0].node.url : hoverImageUrl;
+    const hoverImageUrl = images.length > 1 ? images[1].node.url : imageUrl; // Якщо є друге зображення
+
+    const oldPrice = node.variants.edges[0]?.node.compareAtPrice?.amount || "";
+    const newPrice = node.variants.edges[0]?.node.price.amount;
+    const currency = node.variants.edges[0]?.node.price.currencyCode || "";
+
+    const cardHTML = `
+      <div class="card">
+        <img class="product-image" 
+             src="${imageUrl}" 
+             alt="${node.title}" 
+             data-default="${imageUrl}" 
+             data-hover="${hoverImageUrl}" />
+        <span class="name">${node.title}</span>
+        <span class="description">${node.description || "No description available"}</span>
+        <div class="price">
+          <span class="old">${oldPrice ? `${oldPrice} ${currency}` : ""}</span>
+          <span class="new">${newPrice} ${currency}</span>
+        </div>
+      </div>
+    `;
+
+    cardsContainer.innerHTML += cardHTML;
+  });
+
+  // Додаємо ховер ефект після рендеру
+  document.querySelectorAll(".product-image").forEach((img) => {
+    img.addEventListener("mouseover", () => {
+      img.src = img.dataset.hover; // Міняємо на другу картинку
+    });
+
+    img.addEventListener("mouseout", () => {
+      img.src = img.dataset.default; // Повертаємо першу картинку
+    });
+  });
+}
+
+
+fetchProducts();

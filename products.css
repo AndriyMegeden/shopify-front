@@ -51,7 +51,7 @@ body {
   justify-self: center;
   color: #000;
   max-width: 300px;
-  max-height: 474px;
+  min-height: 474px;
 }
 
 .card img {
