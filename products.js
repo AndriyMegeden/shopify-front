@@ -139,4 +139,4 @@ function renderProducts(products) {
   });
 }
 
-fetchProducts();
+
