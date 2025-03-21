@@ -1,4 +1,3 @@
-const accordionWrap = document.querySelectorAll(".accordion-con");
 const accordionItems = document.querySelectorAll(".accordion-item");
 
 accordionItems.forEach((item) => {
@@ -28,8 +27,6 @@ accordionItems.forEach((item) => {
     }
   });
 });
-
-
 
 const query = `
 {
@@ -68,17 +65,21 @@ const query = `
 
 async function fetchProducts() {
   try {
-    const response = await fetch("https://tsodykteststore.myshopify.com/api/2023-01/graphql.json", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": "7e174585a317d187255660745da44cc7"
-      },
-      body: JSON.stringify({ query })
-    });
+    const response = await fetch(
+      "https://tsodykteststore.myshopify.com/api/2023-01/graphql.json",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token":
+            "7e174585a317d187255660745da44cc7",
+        },
+        body: JSON.stringify({ query }),
+      }
+    );
 
     const data = await response.json();
-    console.log("Отримані дані:", data); 
+    console.log("Отримані дані:", data);
 
     if (data?.data?.products?.edges?.length) {
       renderProducts(data.data.products.edges);
@@ -90,12 +91,11 @@ async function fetchProducts() {
   }
 }
 
-
 fetchProducts();
 
 function renderProducts(products) {
   const cardsContainer = document.querySelector(".cards");
-  cardsContainer.innerHTML = ""; 
+  cardsContainer.innerHTML = "";
 
   products.forEach(({ node }) => {
     const images = node.images.edges;
@@ -110,11 +110,13 @@ function renderProducts(products) {
       <div class="card">
         <img class="product-image" 
              src="${imageUrl}" 
-             alt="${node.title}" 
+             alt="${images[0].node.altText || node.title}" 
              data-default="${imageUrl}" 
              data-hover="${hoverImageUrl}" />
         <span class="name">${node.title}</span>
-        <span class="description">${node.description || "No description available"}</span>
+        <span class="description">${
+          node.description || "No description available"
+        }</span>
         <div class="price">
           <span class="old">${oldPrice ? `${oldPrice} ${currency}` : ""}</span>
           <span class="new">${newPrice} ${currency}</span>
@@ -136,6 +138,5 @@ function renderProducts(products) {
     });
   });
 }
-
 
 fetchProducts();
