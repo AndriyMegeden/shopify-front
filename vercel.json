@@ -1,21 +1,9 @@
 {
-    "version": 2,
-    "builds": [
+    "redirects": [
       {
-        "src": "*.html",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "*.css",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "*.js",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "images/*",
-        "use": "@vercel/static"
+        "source": "/",
+        "destination": "/products.html",
+        "permanent": true
       }
     ]
   }
