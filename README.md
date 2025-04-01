@@ -1,1 +1,1 @@
-# test-shopify-front
+# shopify-front
